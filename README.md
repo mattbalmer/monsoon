@@ -6,6 +6,8 @@ Monsoon allows for easy, extensible CRUD REST API generation using Express & Mon
 ## Installation
 
     $ npm install monsoon
+    
+Monsoon requires both `express` and `mongoose`.
 
 ## Quick Start
 
