@@ -25,43 +25,43 @@ That's it! You now have routes in place for some of the more common REST operati
 Currently, Monsoon will generate the following routes & controllers. All various responses and the HTTP codes associated with them have been included.
 
 ### METHOD /PATH (example)
-**Params:** any URL parameters the method requires
-**Body:** any URL parameters the method requires
+**Params:** any URL parameters the method requires  
+**Body:** any URL parameters the method requires  
 **Returns:** `###` what the controller returns in the response body
 
 ### GET /
-**Returns:** `200` a JSON array of all documents in the collection
+**Returns:** `200` a JSON array of all documents in the collection  
 **Returns:** `500` an error string
 
 ### POST /
-**Body:** a JSON representation of the document to be created
-**Returns:** `200` a JSON representation of the created document
+**Body:** a JSON representation of the document to be created  
+**Returns:** `200` a JSON representation of the created document  
 **Returns:** `500` an error string
 
 ### GET /:id
-**Params:** a 24-character Mongo ID
-**Returns:** `200` a JSON representation of the document in the collection with the given ID
-**Returns:** `404`
+**Params:** a 24-character Mongo ID  
+**Returns:** `200` a JSON representation of the document in the collection with the given ID  
+**Returns:** `404`  
 **Returns:** `500` an error string
 
 ### PUT /:id
-**Params:** a 24-character Mongo ID
-**Body:** a JSON representation of the updated document
-**Returns:** `200` a JSON representation of the updated document
-**Returns:** `404`
+**Params:** a 24-character Mongo ID  
+**Body:** a JSON representation of the updated document  
+**Returns:** `200` a JSON representation of the updated document  
+**Returns:** `404`  
 **Returns:** `500` an error string
 
 ### PATCH /:id
-**Params:** a 24-character Mongo ID
-**Body:** a JSON object containing the fields & values to update the document with
-**Returns:** `200` a JSON representation of the updated document
-**Returns:** `404`
+**Params:** a 24-character Mongo ID  
+**Body:** a JSON object containing the fields & values to update the document with  
+**Returns:** `200` a JSON representation of the updated document  
+**Returns:** `404`  
 **Returns:** `500` an error string
 
 ### DELETE /:id
-**Params:** a 24-character Mongo ID
-**Returns:** `204`
-**Returns:** `404`
+**Params:** a 24-character Mongo ID  
+**Returns:** `204`  
+**Returns:** `404`  
 **Returns:** `500` an error string
 
 ## Extending Monsoon Controllers
@@ -80,7 +80,7 @@ And create a `products.js` file, which will look something like this:
     var monsoon = require('monsoon')
         , controller = module.exports = monsoon.controllers('Product');
 
-    // Controllers
+    // Custom Controllers
     controllers.get('/status', function(req, res) {
         res.json({
             status: 'online'
@@ -98,3 +98,10 @@ And there you have it. Define any routes you wish on the `controllers` object ju
 The following are known issues and will be addressed soon
 
 * Multiple controller callbacks/middleware ( `app.get('/path', middlewareFunction, function(req, res) { ... })` )
+
+## Contact & License Info
+
+Author: Matthew Balmer  
+Twitter: [@mattbalmer](http://twitter.com/mattbalmer)  
+Website: [http://mattbalmer.com](http://mattbalmer.com)  
+License: MIT
