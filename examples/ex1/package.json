@@ -1,6 +1,6 @@
 {
-    "name": "monsoon",
-    "version": "0.1.0",
+    "name": "monsoon_demo_ex1",
+    "version": "0.1.1",
     "dependencies": {
         "mongodb": "1.3.x",
         "mongoose": "3.8.x",
