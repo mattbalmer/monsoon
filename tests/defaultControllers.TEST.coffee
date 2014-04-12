@@ -248,9 +248,14 @@ describe 'defaultControllers chai', ->
 
             savedDoc = document
             document =
-                foo: 'bar'
+                foo: 'sbar'
                 save: chai.spy (callback) ->
                     callback saveErr, savedDoc
+                schema:
+                    paths:
+                        foo: 'String'
+                        name: 'String'
+                        price: 'Integer'
 
         it 'should call Schema.findOne with the ID param', ->
             @Schema.findOne = chai.spy (filter, callback)->
@@ -297,3 +302,147 @@ describe 'defaultControllers chai', ->
 
                 expect( @controller.handle ).to.have.been.called.once
                 expectArgs( @controller.handle ).to.have.been saveErr, savedDoc
+
+            describe 'document model updates', ->
+                it 'should put all props in the Schema & req.body on document', ->
+                    @req.body =
+                        foo: 'newfoo'
+                        name: 'MY NAME HERE'
+                        doesNotExist: 'huehue'
+
+                    @controller.main()
+
+                    expect( document.doesNotExist ).to.equal undefined
+                    expect( document.foo ).to.equal 'newfoo'
+                    expect( document.name ).to.equal 'MY NAME HERE'
+
+                it 'should strip properties that are not set on req.body (and arent __v or _id)', ->
+                    document.name = 'Initial Name'
+                    document.price = 2
+                    document._id = 'somehashhere'
+                    document.__v = 1
+
+                    @req.body =
+                        foo: 'newfoo'
+
+                    expect( document.name ).to.equal 'Initial Name'
+                    expect( document.price ).to.equal 2
+                    expect( document._id ).to.equal 'somehashhere'
+                    expect( document.__v ).to.equal 1
+
+                    @controller.main()
+
+                    expect( document.name ).to.equal undefined
+                    expect( document.price ).to.equal undefined
+                    expect( document._id ).to.equal 'somehashhere'
+                    expect( document.__v ).to.equal 1
+
+        describe 'failure()', ->
+            it 'should call res.send(500, {errmsg}) if err exists', ->
+                err = message: "it's dead, Jim"
+
+                @controller.failure err
+
+                expect( @res.send ).to.have.been.called.once
+                expectArgs( @res.send ).to.have.been 500, 'Something went wrong: ' + err.toString()
+
+            it 'should call res.send(500, {unknown}) if err does not exist', ->
+                @controller.failure()
+
+                expect( @res.send ).to.have.been.called.once
+                expectArgs( @res.send ).to.have.been 500, 'An unknown error occurred.'
+
+    describe 'patch controller', ->
+        savedDoc = {}
+        document = {}
+        saveErr = message: 'onSave error'
+
+        beforeEach ->
+            @controller = defaultControllers.patch @Schema
+            @controller.set @req, @res
+
+            savedDoc = document
+            document =
+                foo: 'sbar'
+                save: chai.spy (callback) ->
+                    callback saveErr, savedDoc
+                schema:
+                    paths:
+                        foo: 'String'
+                        name: 'String'
+                        price: 'Integer'
+
+        it 'should call Schema.findOne with the ID param', ->
+            @Schema.findOne = chai.spy (filter, callback)->
+                callback undefined, document
+
+            @controller.main()
+
+            expect( @Schema.findOne ).to.have.been.called.once
+                .with _id: @req.param('id')
+
+        describe 'Schema.findOne error cases', ->
+            it 'should call res.send(500, {errmsg} if err exists', ->
+                err = message: 'an error obj'
+                @Schema.findOne = chai.spy (filter, callback)->
+                    callback err, document
+
+                @controller.main()
+
+                expect( @res.send ).to.have.been.called.once
+                expectArgs( @res.send ).to.have.been 500, 'Something went wrong: ' + err.toString()
+
+            it 'should call res.send(404, null) if document does not exist', ->
+                @Schema.findOne = chai.spy (filter, callback)->
+                    callback undefined, undefined
+
+                @controller.main()
+
+                expect( @res.send ).to.have.been.called.once
+                expectArgs( @res.send ).to.have.been 404, null
+
+        describe 'Schema.findOne success case', ->
+            beforeEach ->
+                @Schema.findOne = chai.spy (filter, callback)->
+                    callback undefined, document
+                @controller.handle = chai.spy()
+
+            it 'should call doc.save', ->
+                @controller.main()
+
+                expect( document.save ).to.have.been.called.once
+
+            it 'should call controller.handle(err, savedDocument)', ->
+                @controller.main()
+
+                expect( @controller.handle ).to.have.been.called.once
+                expectArgs( @controller.handle ).to.have.been saveErr, savedDoc
+
+            describe 'document model updates', ->
+                it 'should put all props in the Schema & req.body on document', ->
+                    @req.body =
+                        foo: 'newfoo'
+                        name: 'MY NAME HERE'
+                        doesNotExist: 'huehue'
+
+                    @controller.main()
+
+                    expect( document.doesNotExist ).to.equal undefined
+                    expect( document.foo ).to.equal 'newfoo'
+                    expect( document.name ).to.equal 'MY NAME HERE'
+
+        describe 'failure()', ->
+            it 'should call res.send(500, {errmsg}) if err exists', ->
+                err = message: "it's dead, Jim"
+
+                @controller.failure err
+
+                expect( @res.send ).to.have.been.called.once
+                expectArgs( @res.send ).to.have.been 500, 'Something went wrong: ' + err.toString()
+
+            it 'should call res.send(500, {unknown}) if err does not exist', ->
+                @controller.failure()
+
+                expect( @res.send ).to.have.been.called.once
+                expectArgs( @res.send ).to.have.been 500, 'An unknown error occurred.'
+
