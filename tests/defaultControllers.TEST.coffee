@@ -238,30 +238,62 @@ describe 'defaultControllers chai', ->
                 expectArgs( @res.send ).to.have.been 500, 'An unknown error occurred.'
 
     describe 'put controller', ->
-        document = foo: 'bar'
+        savedDoc = {}
+        document = {}
+        saveErr = message: 'onSave error'
 
         beforeEach ->
             @controller = defaultControllers.put @Schema
             @controller.set @req, @res
-            @Schema.findOne = chai.spy (filter, callback)->
-                callback undefined, document if callback
+
+            savedDoc = document
+            document =
+                foo: 'bar'
+                save: chai.spy (callback) ->
+                    callback saveErr, savedDoc
 
         it 'should call Schema.findOne with the ID param', ->
+            @Schema.findOne = chai.spy (filter, callback)->
+                callback undefined, document
+
             @controller.main()
 
-            expect( @Schema.findOne ).to.have.been.called
-                .once.with _id: @req.param('id')
+            expect( @Schema.findOne ).to.have.been.called.once
+                .with _id: @req.param('id')
 
-        describe 'findOne', ->
-            it 'should call the callback', ->
-                @controller.handle = chai.spy()
+        describe 'Schema.findOne error cases', ->
+            it 'should call res.send(500, {errmsg} if err exists', ->
                 err = message: 'an error obj'
-                documents = [ foo: 'bar' ]
-                quantity = 1
-                @Schema.remove = (filter, callback)->
-                    callback err, documents, quantity
+                @Schema.findOne = chai.spy (filter, callback)->
+                    callback err, document
 
                 @controller.main()
 
-                expect( @controller.handle ).to.have.been.called
-                .once.with err, documents, quantity
+                expect( @res.send ).to.have.been.called.once
+                expectArgs( @res.send ).to.have.been 500, 'Something went wrong: ' + err.toString()
+
+            it 'should call res.send(404, null) if document does not exist', ->
+                @Schema.findOne = chai.spy (filter, callback)->
+                    callback undefined, undefined
+
+                @controller.main()
+
+                expect( @res.send ).to.have.been.called.once
+                expectArgs( @res.send ).to.have.been 404, null
+
+        describe 'Schema.findOne success case', ->
+            beforeEach ->
+                @Schema.findOne = chai.spy (filter, callback)->
+                    callback undefined, document
+                @controller.handle = chai.spy()
+
+            it 'should call doc.save', ->
+                @controller.main()
+
+                expect( document.save ).to.have.been.called.once
+
+            it 'should call controller.handle(err, savedDocument)', ->
+                @controller.main()
+
+                expect( @controller.handle ).to.have.been.called.once
+                expectArgs( @controller.handle ).to.have.been saveErr, savedDoc
