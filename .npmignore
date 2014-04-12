@@ -1,3 +1,6 @@
 .gitignore
 .idea
 examples
+test
+compile-coffee.command
+node_modules
