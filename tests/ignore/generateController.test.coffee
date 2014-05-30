@@ -1,7 +1,7 @@
-generateController = require '../lib/generateController'
+generateController = require '../../lib/generateController'
 chai = require 'chai'
 spies = require 'chai-spies'
-expectArgs = require './helpers'
+expectArgs = require './../helpers'
 chai.use spies
 expect = chai.expect
 

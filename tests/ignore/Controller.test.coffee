@@ -1,4 +1,4 @@
-Controller = require '../lib/Controller'
+Controller = require '../../lib/Controller'
 chai = require 'chai'
 spies = require 'chai-spies'
 chai.use spies

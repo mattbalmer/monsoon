@@ -1,8 +1,8 @@
-Controller = require '../lib/Controller'
-defaultControllers = require '../lib/defaultControllers'
+Controller = require '../../lib/Controller'
+defaultControllers = require '../../lib/defaultControllers'
 chai = require 'chai'
 spies = require 'chai-spies'
-expectArgs = require './helpers'
+expectArgs = require './../helpers'
 chai.use spies
 expect = chai.expect
 
