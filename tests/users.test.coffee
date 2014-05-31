@@ -14,7 +14,7 @@ app.get '/', (req, res)-> res.send 'root'
 app.use '/users', monsoon.app 'User'
 
 # === Tests ===
-describe 'users', ->
+describe '/users', ->
     server = supertest.agent app
 
     describe 'GET /', ->
@@ -24,9 +24,9 @@ describe 'users', ->
                 .expect 200
                 .expect '[]', done
 
-    describe 'GET /:id', ->
-
-        it 'should return 404, null', (done)->
-            server.get '/users/abc123'
-                .expect 200
-                .expect '', done
+#    describe 'GET /:id', ->
+#
+#        it 'should return 404, null', (done)->
+#            server.get '/users/abc123'
+#                .expect 200
+#                .expect '', done
