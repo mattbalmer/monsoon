@@ -1,4 +1,4 @@
-var m = module.exports = {};
-
-m.app = require('./lib/generateApp.js');
-m.controllers = require('./lib/generateController.js');
+module.exports = {
+    router: require('./lib/Router').router,
+    export: require('./lib/export').toExpressRouter
+};

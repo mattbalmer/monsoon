@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose-q')();
 
 var EventSchema = new mongoose.Schema({
     name: {
