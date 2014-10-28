@@ -1,5 +1,6 @@
 {
     "name": "monsoon",
+    "main": "index.js",
     "version": "0.1.2",
     "description": "Allows for easy & extensible CRUD REST API generation using Express & Mongoose",
     "author": "Matt Balmer <matt@mattbalmer.com>",

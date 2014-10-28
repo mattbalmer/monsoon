@@ -1,5 +1,5 @@
 var routes = module.exports = require('express').Router()
-    , monsoon = require('../../')
+    , monsoon = require('monsoon')
     , mongoose = require('mongoose-q')()
     , Event = mongoose.model('Event');
 

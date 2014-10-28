@@ -1,5 +1,5 @@
 var mongoose = require('mongoose-q')(),
-    monsoon = require('../../../'),
+    monsoon = require('monsoon'),
     Product = mongoose.model('Product'),
     products = module.exports = monsoon.router(Product);
 
