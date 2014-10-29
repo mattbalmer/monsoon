@@ -1,18 +1,21 @@
-compare = (actual, expected)->
-    if actual.length != expected.length
-        throw new Error("Expected "+expected.length+" arguments, got "+actual.length)
-        return
+{expect} = require 'chai'
 
-    for i in [0..actual.length-1]
-        if( actual[i] != expected[i] )
-            throw new Error("Expected argument '"+expected[i]+"' as argument #"+(i+1)+", instead got '"+actual[i]+"'.")
+x =
+    docObj: (doc)->
+        docString = JSON.stringify(doc)
+        return JSON.parse(docString)
 
+    includes: (a, b)->
+        doesInclude = true
+        for k, v of a
+            continue unless a.hasOwnProperty(k)
+            doesInclude = false if b[k] != a[k]
+        doesInclude
 
-module.exports = expectArgs = (spy)->
-    actualArgs = spy.__spy.calls[0]
+    expectDoc: (doc)->
+        doc = x.docObj(doc)
+        toEqual: (obj)->
+            expect( x.includes(doc, obj) ).to.equal true
+            expect( x.includes(obj, doc) ).to.equal true
 
-    to:
-        have:
-            been: ()->
-                args = Array.prototype.slice.call(arguments)
-                compare actualArgs, args
+module.exports = x

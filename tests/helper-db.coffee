@@ -5,29 +5,26 @@ mongoose = require 'mongoose'
 mongoose.connect 'mongodb://localhost/monsoon-demo'
 connection = mongoose.connection
 
-EventSchema = require './server/schemas/Event'
-
-console.log 'eventschema', EventSchema
-
 # Register models
-mongoose.model 'Event', EventSchema
+# mongoose.model 'Event', require './server/schemas/Event'
 mongoose.model 'Product', require './server/schemas/Product'
 mongoose.model 'User', require './server/schemas/User'
 
 # Assign models
-Event = mongoose.model 'Event'
+Event = require('./server/schemas/Event')(mongoose)
 Product = mongoose.model 'Product'
 User = mongoose.model 'User'
 
 drop = (done)->
     mongoose.connection.on 'connected', ()->
         connection.db.dropDatabase ()->
-            console.log 'database has been dropped!', arguments
+            console.log 'database has been dropped!'
             done()
 
 # Drop a collection
 dropCollection = (collection, done) ->
-    connection.db.dropCollection collection, ()->
+    connection.db.dropCollection collection, (err)->
+        throw err if err
         console.log 'collection '+collection+' has been dropped!'
         done()
 
