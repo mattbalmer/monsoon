@@ -1,4 +1,4 @@
+*.iml
 .idea
-test
-compile-coffee.command
 node_modules
+test/compiled

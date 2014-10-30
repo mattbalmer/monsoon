@@ -5,15 +5,8 @@ mongoose = require 'mongoose'
 mongoose.connect 'mongodb://localhost/monsoon-demo'
 connection = mongoose.connection
 
-# Register models
-# mongoose.model 'Event', require './server/schemas/Event'
-mongoose.model 'Product', require './server/schemas/Product'
-mongoose.model 'User', require './server/schemas/User'
-
 # Assign models
-Event = require('./server/schemas/Event')(mongoose)
-Product = mongoose.model 'Product'
-User = mongoose.model 'User'
+Event = require('./../../server/schemas/Event')(mongoose)
 
 drop = (done)->
     mongoose.connection.on 'connected', ()->
@@ -32,5 +25,3 @@ module.exports =
     drop: drop
     dropCollection: dropCollection
     Event: Event
-    Product: Product
-    User: User

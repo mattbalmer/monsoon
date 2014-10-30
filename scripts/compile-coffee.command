@@ -1,2 +1,2 @@
-rmdir test\compiled\ /s /q
+rm -rf test/compiled/
 coffee -c -o test/compiled/ tests

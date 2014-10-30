@@ -1,0 +1,9 @@
+{
+  "name": "monsoon_demo_ex1",
+  "version": "0.1.1",
+  "dependencies": {
+    "express": "4.4.x",
+    "body-parser": "~1.4.3",
+    "mongoose-q": "0.0.10"
+  }
+}

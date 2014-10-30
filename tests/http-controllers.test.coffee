@@ -1,157 +1,164 @@
-{expect} = require 'chai'
 supertest = require 'supertest'
-db = require './helper-db'
-mockErrors = require './mock-db-errors'
-{expectDoc, docObj, includes} = require './helpers'
-server = supertest 'http://localhost:3000/api/events'
+db = require './helpers/db'
+h = require './helpers/common'
+{last, status, body, expectDocument} = require './helpers/supertest'
 
 describe 'http-controllers', ->
+    server = supertest 'http://localhost:3000/api/events'
+
+    # ==== Sample Data ====
+
+    sampleId = '0123456789abcdefghijklmn'
+    id = ''
+    doc = {}
+    data =
+        name: 'Look, an event!'
+        date: '4/3/21'
+
+    # ==== Helper Functions ====
+
+    clearCollection = (done)->
+        db.Event.collection.remove {}, ()->
+            done()
+
+    create = (done)->
+        db.Event.create data, (err, _doc)->
+            throw new Error('Setup failed to create an Event') if err
+            throw new Error('Setup failed to create an Event') unless h.aIncludesB(_doc, data)
+
+#            doc = {}
+            doc = h.docObj(_doc)
+            id = doc._id
+
+            done(_doc)
+
+    # ==== Before ====
 
     before (done)->
         db.drop(done)
 
-    describe 'clean', ->
-        id = '0123456789abcdefghijklmn'
-
-        it 'GET /', (done)->
-            server.get '/'
-                .expect 200
-                .expect '[]'
-                ,done
-
-        it 'POST /', (done)->
-            event =
-                name: 'An Event'
-                date: '1/2/34'
-
-            server.post '/'
-                .send event
-                .expect 201
-                ,(err, res)->
-                    expect(res.status).to.equal 201
-                    result = res.body
-
-                    db.Event.findById result._id, (err, doc)->
-                        expectDoc(doc).toEqual result
-
-                        done()
-
-        it 'GET /:id', (done)->
-            server.get '/'+id
-                .expect 404
-                .expect ''
-                ,done
-
-        it 'DELETE /:id', (done)->
-            server.delete '/'+id
-                .expect 404
-                .expect ''
-                ,done
-
-        it 'PUT /:id', (done)->
-            server.put '/'+id
-                .expect 404
-                .expect ''
-                ,done
-
-        it 'PATCH /:id', (done)->
-            server.patch '/'+id
-                .expect 404
-                .expect ''
-                ,done
-
-    describe 'with starting data', ->
-        id = ''
+    beforeEach (done)->
+        id = sampleId
         doc = {}
-        data =
-            name: 'Look, an event!'
-            date: '4/3/21'
+        clearCollection(done)
 
-        create = (done)->
-            db.Event.create data, (err, _doc)->
-                throw new Error('Setup failed to create an Event') if err
+    # ==== Tests ====
 
-                doc = docObj(_doc)
-                id = doc._id
-
-                expect(doc).to.include data
-                done()
-
-        beforeEach (done)->
-            db.Event.collection.remove {}, ()->
-                create(done)
-
-        it 'GET /', (done)->
+    describe 'GET /', ->
+        it 'no entries', (done)->
             server.get '/'
-                .expect 200
-                .expect [doc]
-                ,done
+            .expect status 200
+            .expect body []
+            .end done
 
-        it 'POST / (conflict)', (done)->
+        it 'one entry', (done)->
+            create ()->
+                server.get '/'
+                .expect status 200
+                .expect body [doc]
+                .end done
+
+    describe 'POST /', ->
+        it 'successful insertion', (done)->
             event =
-                _id: id
                 name: 'An Event'
                 date: '1/2/34'
 
             server.post '/'
+            .send event
+            .expect status 201
+            .end last (res)->
+                expectDocument res.body._id
+                .toEqual res.body
+                .end done
+
+        it 'conflict', (done)->
+            create ()->
+                event =
+                    _id: id
+                    name: 'An Event'
+                    date: '1/2/34'
+
+                server.post '/'
                 .send event
-                .expect 409
-                .expect {}
-                ,done
+                .expect status 409
+                .expect body {}
+                .end done
 
-        it 'GET /:id', (done)->
+    describe 'GET /:id', ->
+        it 'not found', (done)->
             server.get '/'+id
-                .expect 200
-                .expect doc
-                ,done
+            .expect status 404
+            .expect body ''
+            .end done
 
-        it 'DELETE /:id', (done)->
+        it 'found', (done)->
+            create ()->
+                server.get '/'+id
+                .expect status 200
+                .expect body doc
+                .end done
+
+    describe 'DELETE /:id', ->
+        it 'not found', (done)->
             server.delete '/'+id
-                .expect 204
-                ,(err, res)->
-                    expect( res.status ).to.equal 204
-                    expect( includes(res.body, {}) ).to.equal true
+            .expect status 404
+            .expect body ''
+            .end done
 
-                    db.Event.findById doc._id, (err, doc)->
-                        expectDoc(doc).toEqual {}
+        it 'deleted', (done)->
+            create ()->
+                server.delete '/'+id
+                .expect status 204
+                .expect body {}
+                .end last (res)->
+                    expectDocument doc._id
+                    .toEqual null
+                    .end done
 
-                        done()
-
-        it 'PUT /:id', (done)->
-            newData =
-                name: 'A new event'
-                date: '9/8/76'
-
+    describe 'PUT /:id', ->
+        it 'not found', (done)->
             server.put '/'+id
+            .expect status 404
+            .expect body ''
+            .end done
+
+        it 'overwritten', (done)->
+            create ()->
+                newData =
+                    name: 'A new event'
+                    date: '9/8/76'
+
+                server.put '/'+id
                 .send newData
-                .expect 200
-                ,(err, res)->
-                    expect( res.status ).to.equal 200
+                .expect status 200
+                .expect body.includes newData
+                .end last (res)->
+                    expectDocument res.body._id
+                    .toInclude newData
+                    .end done
 
-                    expect( includes(newData, res.body) ).to.equal true
-
-                    db.Event.findById res.body._id, (err, doc)->
-                        expect( includes(newData, doc) ).to.equal true
-
-                        done()
-
-        it 'PATCH /:id', (done)->
-            newData =
-                name: 'A new event'
-
+    describe 'PATCH /:id', ->
+        it 'not found', (done)->
             server.patch '/'+id
+            .expect status 404
+            .expect body ''
+            .end done
+
+        it 'updated', (done)->
+            create ()->
+                newData =
+                    name: 'A new event'
+
+                expected =
+                    name: newData.name
+                    date: data.date
+
+                server.patch '/'+id
                 .send newData
-                .expect 200
-                ,(err, res)->
-                    expected =
-                        name: newData.name
-                        date: data.date
-
-                    expect( res.status ).to.equal 200
-
-                    expect( includes(expected, res.body) ).to.equal true
-
-                    db.Event.findById res.body._id, (err, doc)->
-                        expect( includes(expected, doc) ).to.equal true
-
-                        done()
+                .expect status 200
+                .expect body.includes expected
+                .end last (res)->
+                    expectDocument res.body._id
+                    .toInclude newData
+                    .end done
