@@ -38,7 +38,7 @@ Currently, Monsoon will generate the following routes & controllers. All various
 ### POST /
 **Body:** a JSON representation of the document to be created  
 **Returns:** `200` a JSON representation of the created document  
-**Returns:** `409` an error string
+**Returns:** `409` an error string  
 **Returns:** `500` an error string
 
 ### GET /:id
