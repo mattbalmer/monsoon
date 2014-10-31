@@ -6,3 +6,4 @@ var routes = module.exports = require('express').Router()
 var events = monsoon.router(Event).export();
 
 routes.use( '/api/events', events );
+routes.use( '/api/products', require('./controllers/products').export() );

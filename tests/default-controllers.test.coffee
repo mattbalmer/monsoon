@@ -3,7 +3,7 @@ db = require './helpers/db'
 h = require './helpers/common'
 {last, status, body, expectDocument} = require './helpers/supertest'
 
-describe 'http-controllers', ->
+describe 'Default Controllers', ->
     server = supertest 'http://localhost:3000/api/events'
 
     # ==== Sample Data ====
@@ -34,6 +34,7 @@ describe 'http-controllers', ->
     # ==== Before ====
 
     before (done)->
+        db.connect()
         db.drop(done)
 
     beforeEach (done)->
