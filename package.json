@@ -1,42 +1,42 @@
 {
-  "name": "monsoon",
-  "version": "0.1.2",
-  "description": "Allows for easy & extensible CRUD REST API generation using Express & Mongoose",
-  "author": "Matt Balmer <matt@mattbalmer.com>",
-  "keywords": [
-    "monsoon",
-    "express",
-    "mongo",
-    "mongodb",
-    "mongoose",
-    "database",
-    "schema",
-    "rest",
-    "restful",
-    "crud",
-    "api"
-  ],
-  "repository": "git://github.com/mattbalmer/monsoon",
-  "engines": {
-    "node": ">= 0.10.22"
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "chai": "~1.9.0",
-    "chai-spies": "~0.5.1",
-    "expect.js": "~0.3.1",
-    "express": "4.4.x",
-    "jasmine-node": "~1.14.2",
-    "mocha": "^2.0.1",
-    "mongodb": "1.3.x",
-    "mongoose-q": "0.0.13",
-    "sinon": "~1.9.0",
-    "supertest": "~0.13.0"
-  },
-  "scripts": {
-    "test": "mocha tests --compilers coffee:coffee-script/register"
-  },
-  "dependencies": {
-    "q": "~1.0.1"
-  }
+    "name": "monsoon",
+    "version": "0.1.2",
+    "description": "Allows for easy & extensible CRUD REST API generation using Express & Mongoose",
+    "author": "Matt Balmer <matt@mattbalmer.com>",
+    "keywords": [
+        "monsoon",
+        "express",
+        "mongo",
+        "mongodb",
+        "mongoose",
+        "database",
+        "schema",
+        "rest",
+        "restful",
+        "crud",
+        "api"
+    ],
+    "repository": "git://github.com/mattbalmer/monsoon",
+    "engines": {
+        "node": ">= 0.10.22"
+    },
+    "license": "MIT",
+    "devDependencies": {
+        "chai": "~1.9.0",
+        "chai-spies": "~0.5.1",
+        "expect.js": "~0.3.1",
+        "express": "4.4.x",
+        "jasmine-node": "~1.14.2",
+        "mocha": "^2.0.1",
+        "mongodb": "1.3.x",
+        "mongoose-q": "0.0.13",
+        "sinon": "~1.9.0",
+        "supertest": "~0.13.0"
+    },
+    "scripts": {
+        "test": "mocha tests --compilers coffee:coffee-script/register"
+    },
+    "dependencies": {
+        "q": "~1.0.1"
+    }
 }
