@@ -6,8 +6,6 @@ var app = express(),
 
 // === Import Schemas ===
 mongoose.connect('mongodb://localhost/monsoon-demo');
-//require('./schemas/Product.js');
-//require('./schemas/User.js');
 require('./schemas/Event.js')();
 
 // === Configure Express ===
