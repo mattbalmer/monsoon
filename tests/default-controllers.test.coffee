@@ -26,7 +26,6 @@ describe 'http-controllers', ->
             throw new Error('Setup failed to create an Event') if err
             throw new Error('Setup failed to create an Event') unless h.aIncludesB(_doc, data)
 
-#            doc = {}
             doc = h.docObj(_doc)
             id = doc._id
 
@@ -82,6 +81,17 @@ describe 'http-controllers', ->
                 server.post '/'
                 .send event
                 .expect status 409
+                .expect body {}
+                .end done
+
+        it 'missing required fields', (done)->
+            create ()->
+                event =
+                    date: '1/2/34'
+
+                server.post '/'
+                .send event
+                .expect status 500
                 .expect body {}
                 .end done
 
