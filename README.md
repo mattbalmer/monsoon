@@ -15,10 +15,12 @@ Using monsoon is easy. Let's assume you have a Schema called `Product`. Your API
 
     var express = require('express')
         , monsoon = require('monsoon')
+        , mongoose = require('mongoose')
+        , Product = mongoose.model('Product')
         , app = module.exports = express();
 
     // Resources
-    app.use( '/products', monsoon.app('Product') );
+    app.use( '/products', monsoon.router(Product).export() );
 
 That's it! You now have routes in place for some of the more common REST operations.
 
