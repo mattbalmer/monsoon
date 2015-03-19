@@ -34,8 +34,8 @@ describe 'Default Controllers', ->
     # ==== Before ====
 
     before (done)->
-        db.connect()
-        db.drop(done)
+        db.connect ()->
+            db.drop(done)
 
     beforeEach (done)->
         id = sampleId

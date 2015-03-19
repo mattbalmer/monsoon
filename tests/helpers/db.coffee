@@ -2,42 +2,39 @@
 mongoose = require 'mongoose'
 
 DB =
-    connected: undefined
-    Event: {}
-    Product: {}
-    connection: {}
+    connected: null
+    Event: null
+    Product: null
+    connection: null
 
-connect = ()->
-    unless DB.connected
+DB.connect = (done)->
+    unless DB.connection
         # Connect to a database which is for test
         mongoose.connect 'mongodb://localhost/monsoon-demo'
         DB.connection = mongoose.connection
 
-        require('./../../server/schemas/Event')(mongoose)
-        require('./../../server/schemas/Product')(mongoose)
+        DB.Event = require('./../../server/schemas/Event')(mongoose)
+        DB.Product = require('./../../server/schemas/Product')(mongoose)
 
-    DB.connected = true
+    done()
 
-    # Assign models
-    DB.Event = mongoose.model('Event')
-    DB.Product = mongoose.model('Product')
-
-drop = (done)->
-    mongoose.connection.on 'connected', ()->
+DB.drop = (done)->
+    if DB.connected
         DB.connection.db.dropDatabase ()->
             console.log 'database has been dropped!'
             done()
+    else
+        mongoose.connection.on 'connected', ()->
+            DB.connected = true
+            DB.connection.db.dropDatabase ()->
+                console.log 'database has been dropped!'
+                done()
 
 # Drop a collection
-dropCollection = (collection, done) ->
+DB.dropCollection = (collection, done) ->
     DB.connection.db.dropCollection collection, (err)->
         throw err if err
         console.log 'collection '+collection+' has been dropped!'
         done()
 
-module.exports =
-    connect: connect
-    drop: drop
-    dropCollection: dropCollection
-    Event: DB.Event
-    Product: DB.Product
+module.exports = DB

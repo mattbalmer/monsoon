@@ -35,8 +35,8 @@ describe 'Custom Controllers', ->
 
     before (done)->
         server = supertest 'http://localhost:3000/api/products'
-        db.connect()
-        db.drop(done)
+        db.connect ()->
+            db.drop(done)
 
     beforeEach (done)->
         id = sampleId
